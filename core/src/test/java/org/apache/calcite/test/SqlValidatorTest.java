@@ -8915,6 +8915,8 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
         + "PATTERN_PERMUTE -\n"
         + "WITHIN GROUP left\n"
         + "\n"
+        + "POSTGRESQL_CAST left\n"
+        + "\n"
         + "PATTERN_QUANTIFIER -\n"
         + "\n"
         + " left\n"

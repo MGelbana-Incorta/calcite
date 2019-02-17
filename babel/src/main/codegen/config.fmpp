@@ -830,6 +830,7 @@ data: {
 
       # List of methods for parsing custom data types.
       dataTypeParserMethods: [
+        "PostgreSQLTypes(s)"
       ]
 
       # List of methods for parsing extensions to "ALTER <scope>" calls.
@@ -845,6 +846,16 @@ data: {
       # List of methods for parsing extensions to "DROP" calls.
       # Each must accept arguments "(SqlParserPos pos)".
       dropStatementParserMethods: [
+      ]
+
+      # Binary operators tokens
+      binaryOperatorsTokens: [
+        {name: "PG_CAST", symbol: "::"}
+      ]
+
+      # Binary operators initialization
+      extraExpressions: [
+        "op = PostgreSQLCasting(list, exprContext)"
       ]
 
       # List of files in @includes directory that have parser method

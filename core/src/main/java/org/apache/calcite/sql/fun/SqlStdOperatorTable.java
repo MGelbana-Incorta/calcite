@@ -270,6 +270,11 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           null,
           OperandTypes.EXACT_NUMERIC_EXACT_NUMERIC);
 
+  /**
+   * Casting operator used by PostgreSQL '<code>::</code>'.
+   */
+  public static final SqlBinaryOperator PG_CAST = new PostgreSQLCastOperator();
+
   /** The {@code RAND_INTEGER([seed, ] bound)} function, which yields a random
    * integer, optionally with seed. */
   public static final SqlRandIntegerFunction RAND_INTEGER =

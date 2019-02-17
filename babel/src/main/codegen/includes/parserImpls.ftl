@@ -22,4 +22,35 @@ JoinType LeftSemiJoin() :
     <LEFT> <SEMI> <JOIN> { return JoinType.LEFT_SEMI_JOIN; }
 }
 
+SqlBinaryOperator SpecialBinaryOperator() :
+{
+}
+{
+    <PG_CAST> { return SqlStdOperatorTable.PG_CAST; }
+}
+
+SqlIdentifier PostgreSQLTypes(Span s) :
+{
+}
+{
+    "REGPROC" { return new SqlIdentifier("REGPROC", s.end(this)); }
+}
+
+SqlBinaryOperator PostgreSQLCasting(List<Object> list, ExprContext exprContext) :
+{
+    SqlBinaryOperator op;
+}
+{
+    op = SpecialBinaryOperator() {
+        checkNonQueryExpression(exprContext);
+        list.add(new SqlParserUtil.ToTreeListItem(op, getPos()));
+    }
+    { final SqlDataTypeSpec dt; }
+    (
+      dt = DataType() {
+        list.add(dt);
+      }
+    )
+    { return op ;}
+}
 // End parserImpls.ftl

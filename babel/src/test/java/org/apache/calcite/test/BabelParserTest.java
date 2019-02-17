@@ -17,6 +17,7 @@
 package org.apache.calcite.test;
 
 import org.apache.calcite.sql.parser.SqlAbstractParserImpl;
+import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParserImplFactory;
 import org.apache.calcite.sql.parser.SqlParserTest;
 import org.apache.calcite.sql.parser.SqlParserUtil;
@@ -199,6 +200,27 @@ public class BabelParserTest extends SqlParserTest {
         }
       }
     };
+  }
+
+  @Test public void testParsingPGCastingOperator() throws SqlParseException {
+    String query = "SELECT x::integer FROM (VALUES (1, 2)) as tbl(x,y)";
+    String expected = "SELECT `X` :: INTEGER\n"
+        + "FROM (VALUES (ROW(1, 2))) AS `TBL` (`X`, `Y`)";
+    sql(query).ok(expected);
+  }
+
+  @Test public void testSelectingPgOidType() throws SqlParseException {
+    String query = "SELECT regproc, y FROM (VALUES (1, 2)) as tbl(regproc,y)";
+    String expected = "SELECT `REGPROC`, `Y`\n"
+        + "FROM (VALUES (ROW(1, 2))) AS `TBL` (`REGPROC`, `Y`)";
+    sql(query).ok(expected);
+  }
+
+  @Test public void testCastingPgOidType() throws SqlParseException {
+    String query = "SELECT col::regproc FROM (VALUES ('bool', 'char')) as tbl(col)";
+    String expected = "SELECT `COL` :: `REGPROC`\n"
+        + "FROM (VALUES (ROW('bool', 'char'))) AS `TBL` (`COL`)";
+    sql(query).ok(expected);
   }
 }
 
