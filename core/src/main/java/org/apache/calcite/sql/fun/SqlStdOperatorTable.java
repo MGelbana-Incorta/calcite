@@ -1452,6 +1452,15 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
 
   public static final SqlFunction POSITION = new SqlPositionFunction();
 
+  public static final SqlFunction GENERATE_SERIES =
+      new SqlFunction(
+          "GENERATE_SERIES",
+          SqlKind.OTHER_FUNCTION,
+          ReturnTypes.TO_MULTISET,
+          null,
+          OperandTypes.variadic(SqlOperandCountRanges.between(2, 4)),
+          SqlFunctionCategory.SYSTEM);
+
   public static final SqlFunction CHAR_LENGTH =
       new SqlFunction(
           "CHAR_LENGTH",

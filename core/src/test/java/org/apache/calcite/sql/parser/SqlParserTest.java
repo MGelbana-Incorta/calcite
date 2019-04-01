@@ -3390,7 +3390,7 @@ public class SqlParserTest {
   @Test public void testLateral() {
     // Bad: LATERAL table
     sql("select * from lateral ^emp^")
-        .fails("(?s)Encountered \"emp\" at .*");
+        .fails("(?s)Encountered \"emp\" at line 1, column 23.*");
     sql("select * from lateral table ^emp^ as e")
         .fails("(?s)Encountered \"emp\" at .*");
 

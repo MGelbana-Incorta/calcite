@@ -1308,6 +1308,16 @@ SqlNode NamedRoutineCall(
     name = CompoundIdentifier() {
         s = span();
     }
+    NamedRoutineCall2(list, exprContext)
+    {
+        return createCall(name, s.end(this), routineType, null, list);
+    }
+}
+
+void NamedRoutineCall2(List<SqlNode> list, ExprContext exprContext) :
+{
+}
+{
     <LPAREN>
     [
         Arg0(list, exprContext)
@@ -1320,9 +1330,6 @@ SqlNode NamedRoutineCall(
         )*
     ]
     <RPAREN>
-    {
-        return createCall(name, s.end(this), routineType, null, list);
-    }
 }
 
 /**
@@ -1874,32 +1881,57 @@ SqlNode TableRef2(boolean lateral) :
     int repeatableSeed = 0;
     SqlNodeList columnAliasList = null;
     SqlUnnestOperator unnestOp = SqlStdOperatorTable.UNNEST;
+    
+    final List<SqlNode> list = new ArrayList<SqlNode>();
+    SqlFunctionCategory funcType = SqlFunctionCategory.USER_DEFINED_TABLE_FUNCTION;
+    ExprContext exprContext = ExprContext.ACCEPT_CURSOR;
+    SqlNode call;
 }
 {
     (
         LOOKAHEAD(2)
-        tableRef = CompoundIdentifier()
-        [
-            [ <EXTEND> ]
-            extendList = ExtendList() {
-                tableRef = extend(tableRef, extendList);
-            }
-        ]
-        over = TableOverOpt() {
-            if (over != null) {
-                tableRef = SqlStdOperatorTable.OVER.createCall(
-                    getPos(), tableRef, over);
-            }
+        tableRef = CompoundIdentifier() {
+            s = span();
         }
-        [
-            snapshot = Snapshot(tableRef) {
-                tableRef = SqlStdOperatorTable.LATERAL.createCall(
-                    getPos(), snapshot);
+        (
+        <#if parser.allowSelectingTableFunctions >
+            LOOKAHEAD(5)
+            [ <LATERAL> ]
+            [
+                <SPECIFIC>
+                {
+                    funcType = SqlFunctionCategory.USER_DEFINED_TABLE_SPECIFIC_FUNCTION;
+                }
+            ]
+            NamedRoutineCall2(list, exprContext)
+            {
+                call = createCall((SqlIdentifier) tableRef, s.end(this), funcType, null, list);
+                tableRef = SqlStdOperatorTable.COLLECTION_TABLE.createCall(s.pos(), call);
             }
-        ]
-        [
-            tableRef = MatchRecognize(tableRef)
-        ]
+        |
+        </#if>
+            [
+                [ <EXTEND> ]
+                extendList = ExtendList() {
+                    tableRef = extend(tableRef, extendList);
+                }
+            ]
+            over = TableOverOpt() {
+                if (over != null) {
+                    tableRef = SqlStdOperatorTable.OVER.createCall(
+                        getPos(), tableRef, over);
+                }
+            }
+            [
+                snapshot = Snapshot(tableRef) {
+                    tableRef = SqlStdOperatorTable.LATERAL.createCall(
+                        getPos(), snapshot);
+                }
+            ]
+            [
+                tableRef = MatchRecognize(tableRef)
+            ]
+        )
     |
         LOOKAHEAD(2)
         [ <LATERAL> { lateral = true; } ]
