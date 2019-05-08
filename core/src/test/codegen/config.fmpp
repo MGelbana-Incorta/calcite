@@ -391,6 +391,8 @@ data: {
         "parserImpls.ftl"
       ]
 
+      allowSelectingTableFunctions: false
+      includeParenthesizedJoins: false
       includeCompoundIdentifier: true
       includeBraces: true
       includeAdditionalDeclarations: false

@@ -665,23 +665,37 @@ SqlNode LeafQuery(ExprContext exprContext) :
  */
 SqlNode ParenthesizedExpression(ExprContext exprContext) :
 {
-    SqlNode e;
+    SqlNode e, left, right;
 }
 {
     <LPAREN>
-    {
-        // we've now seen left paren, so queries inside should
-        // be allowed as sub-queries
-        switch (exprContext) {
-        case ACCEPT_SUB_QUERY:
-            exprContext = ExprContext.ACCEPT_NONCURSOR;
-            break;
-        case ACCEPT_CURSOR:
-            exprContext = ExprContext.ACCEPT_ALL;
-            break;
-        }
-    }
-    e = OrderedQueryOrExpr(exprContext)
+    <#if parser.includeParenthesizedJoins >
+    (
+        LOOKAHEAD(3)
+        (
+            left = TableRef()
+            e = JoinTable(left)
+        )
+    |
+    </#if>
+        (
+            {
+                // we've now seen left paren, so queries inside should
+                // be allowed as sub-queries
+                switch (exprContext) {
+                case ACCEPT_SUB_QUERY:
+                    exprContext = ExprContext.ACCEPT_NONCURSOR;
+                    break;
+                case ACCEPT_CURSOR:
+                    exprContext = ExprContext.ACCEPT_ALL;
+                    break;
+                }
+            }
+            e = OrderedQueryOrExpr(exprContext)
+        )
+    <#if parser.includeParenthesizedJoins >
+    )
+    </#if>
     <RPAREN>
     {
         return e;

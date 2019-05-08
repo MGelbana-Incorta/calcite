@@ -160,6 +160,19 @@ public class BabelParserTest extends SqlParserTest {
         "(?s)Encountered \"when then\" at .*");
   }
 
+  @Test public void testParenthesizedJoins() {
+    final String sql = "SELECT * FROM "
+        + "(((S.C c INNER JOIN S.N n ON n.id = c.id) "
+        + "INNER JOIN S.A a ON (NOT a.isactive)) "
+        + "INNER JOIN S.T t ON t.id = a.id)";
+    final String expected = "SELECT *\n"
+        + "FROM `S`.`C` AS `C`\n"
+        + "INNER JOIN `S`.`N` AS `N` ON (`N`.`ID` = `C`.`ID`)\n"
+        + "INNER JOIN `S`.`A` AS `A` ON (NOT `A`.`ISACTIVE`)\n"
+        + "INNER JOIN `S`.`T` AS `T` ON (`T`.`ID` = `A`.`ID`)";
+    sql(sql).ok(expected);
+  }
+
   /**
    * Babel parser's global {@code OOKAHEAD} is larger than the core
    * parser's. This causes different parse error message between these two
