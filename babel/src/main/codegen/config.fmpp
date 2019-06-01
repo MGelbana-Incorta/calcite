@@ -26,6 +26,7 @@ data: {
       # List of keywords.
       keywords: [
         "SEMI"
+        "TEXT"
       ]
 
       # List of keywords from "keywords" section that are not reserved.
@@ -298,6 +299,7 @@ data: {
         "SUBSTITUTE"
         "TABLE_NAME"
         "TEMPORARY"
+        "TEXT"
         "TIES"
         "TIMESTAMPADD"
         "TIMESTAMPDIFF"
@@ -830,7 +832,14 @@ data: {
 
       # List of methods for parsing custom data types.
       dataTypeParserMethods: [
-        "PostgreSQLTypes(s)"
+         "PostgreSQLTypes"
+      ]
+
+      # List of methods for parsing builtin function calls.
+      # Return type of method implementation should be "SqlNode".
+      # Example: DateFunctionCall().
+      builtinFunctionCallMethods: [
+         "DateFunctionCall()"
       ]
 
       # List of methods for parsing extensions to "ALTER <scope>" calls.

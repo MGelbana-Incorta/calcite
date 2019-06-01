@@ -34,6 +34,8 @@ SqlIdentifier PostgreSQLTypes(Span s) :
 }
 {
     "REGPROC" { return new SqlIdentifier("REGPROC", s.end(this)); }
+    |
+    <TEXT> { return new SqlIdentifier(SqlTypeName.TEXT.name(), s.end(this)); }
 }
 
 SqlBinaryOperator PostgreSQLCasting(List<Object> list, ExprContext exprContext) :
